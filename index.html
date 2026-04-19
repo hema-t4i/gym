@@ -191,6 +191,26 @@ body {
   border-radius: 8px;
 }
 
+.exercise-card .demo-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.exercise-card .demo-btn:active {
+  background: var(--border);
+  color: var(--text);
+}
+
 .superset-label {
   font-size: 11px;
   text-transform: uppercase;
@@ -604,6 +624,7 @@ function renderWorkout(workout) {
       currentSuperset = null;
     }
 
+    const searchQ = encodeURIComponent(ex.name + ' exercise form');
     html += `
       <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup'})">
         <div class="top-row">
@@ -616,6 +637,7 @@ function renderWorkout(workout) {
           ${ex.rest ? `<span>${ex.rest} rest</span>` : ''}
         </div>
         ${ex.note ? `<div class="note">${ex.note}</div>` : ''}
+        <a class="demo-btn" href="https://www.youtube.com/results?search_query=${searchQ}" target="_blank" onclick="event.stopPropagation()">&#x25B6; watch demo</a>
       </div>
     `;
   });
