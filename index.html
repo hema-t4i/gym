@@ -14,9 +14,9 @@
   --border: #302e2b;
   --text: #ece8e1;
   --text2: #8a847a;
-  --accent: #e0926a;
-  --accent2: #c47a52;
-  --glow: rgba(224, 146, 106, 0.08);
+  --accent: #7ec89f;
+  --accent2: #5ea87f;
+  --glow: rgba(126, 200, 159, 0.08);
 }
 
 body {
@@ -79,7 +79,7 @@ body {
 .focus-btn .sub { font-size: 11px; color: var(--text2); font-weight: 400; margin-top: 3px; display: block; }
 .focus-btn.active {
   border-color: var(--accent);
-  background: rgba(224, 146, 106, 0.12);
+  background: rgba(126, 200, 159, 0.10);
   box-shadow: 0 0 0 2px var(--accent);
 }
 .focus-btn .selected-dot {
@@ -884,7 +884,7 @@ function swapExercise(idx) {
 }
 
 function isNonCountable(ex) {
-  return ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown';
+  return ex.type === 'warmup' || ex.type === 'stretch';
 }
 
 function rerenderExercises() {
