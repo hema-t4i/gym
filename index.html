@@ -742,16 +742,27 @@ function toggleFocus(btn) {
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
 function getDurationConfig() {
-  if (selectedDuration === 30) return { mains: 3, comboMains: 4, warmups: 2, cooldowns: 2, supersets: 1 };
-  if (selectedDuration === 60) return { mains: 6, comboMains: 8, warmups: 3, cooldowns: 3, supersets: 3 };
-  return { mains: 4, comboMains: 6, warmups: 3, cooldowns: 3, supersets: 2 };
+  if (selectedDuration === 30) return { mains: 3, comboMains: 3, warmups: 2, cooldowns: 2, supersets: 1 };
+  if (selectedDuration === 60) return { mains: 8, comboMains: 10, warmups: 3, cooldowns: 3, supersets: 4 };
+  return { mains: 5, comboMains: 6, warmups: 3, cooldowns: 3, supersets: 2 };
 }
 
 function scaleWorkout(workout) {
   const cfg = getDurationConfig();
   const warmups = workout.exercises.filter(e => e.type === 'warmup');
-  const mains = workout.exercises.filter(e => !e.type || e.type === 'finisher');
-  const scaled = shuffle(mains).slice(0, cfg.mains + 1);
+  const mains = workout.exercises.filter(e => !e.type).map(e => ({...e, superset: undefined}));
+  const finisher = workout.exercises.filter(e => e.type === 'finisher');
+  let pool = [...mains];
+  if (pool.length < cfg.mains) {
+    const focus = [...selectedFocuses][0];
+    const usedNames = new Set(pool.map(e => e.name));
+    (WORKOUTS[focus] || []).forEach(w => {
+      w.exercises.forEach(ex => {
+        if (!ex.type && !usedNames.has(ex.name)) { usedNames.add(ex.name); pool.push({...ex, superset: undefined}); }
+      });
+    });
+  }
+  const scaled = shuffle(pool).slice(0, cfg.mains);
   for (let i = 0; i < scaled.length - 1; i += 2) {
     if (i / 2 < cfg.supersets) {
       const tag = String.fromCharCode(65 + i / 2);
@@ -760,7 +771,7 @@ function scaleWorkout(workout) {
       scaled[i + 1].superset = tag;
     }
   }
-  return { name: workout.name, exercises: [...warmups.slice(0, cfg.warmups), ...scaled] };
+  return { name: workout.name, exercises: [...warmups.slice(0, cfg.warmups), ...scaled, ...finisher.slice(0, 1)] };
 }
 
 function generateWorkout() {
@@ -943,7 +954,7 @@ function swapExercise(idx) {
 }
 
 function isNonCountable(ex) {
-  return ex.type === 'warmup' || ex.type === 'stretch';
+  return false;
 }
 
 function rerenderExercises() {
