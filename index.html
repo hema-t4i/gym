@@ -191,23 +191,45 @@ body {
   border-radius: 8px;
 }
 
-.exercise-card .demo-btn {
-  display: inline-flex;
+.exercise-card .demo-row {
+  display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 10px;
   margin-top: 10px;
-  padding: 6px 12px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text2);
-  font-size: 12px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.2s;
 }
-.exercise-card .demo-btn:active {
-  background: var(--border);
+.exercise-card .demo-thumb {
+  position: relative;
+  width: 90px;
+  height: 52px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--surface2);
+}
+.exercise-card .demo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.exercise-card .demo-thumb .play-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.3);
+}
+.exercise-card .demo-thumb .play-icon svg {
+  display: block;
+}
+.exercise-card .demo-link {
+  font-size: 12px;
+  color: var(--text2);
+  text-decoration: none;
+  font-weight: 500;
+}
+.exercise-card .demo-link:active {
   color: var(--text);
 }
 
@@ -304,6 +326,90 @@ body {
 </div>
 
 <script>
+const VIDEOS = {
+  'Barbell Hip Thrust': '8BPi7X21BhA',
+  'Barbell Back Squat': 'q1fCgfieNEs',
+  'Bulgarian Split Squat': 'hiLF_pF3EJM',
+  'Cable Kickback': 'A9aN_L4vexk',
+  'Banded Lateral Walk': 'sI5q7Ulk5PM',
+  'Sumo Deadlift': 'XsrD5y8EIKU',
+  'Goblet Squat': 'lRYBbchqxtI',
+  'Cable Pull-Through': 'DbSF7ipBh5Y',
+  'Single-Leg Hip Thrust': '3suM3LwVlVM',
+  'Trap Bar Deadlift': 'v-SrIcAp3vM',
+  'Smith Machine Squat': 'fC5urG2CCr8',
+  'Hip Abduction Machine': '01HilwRf8m8',
+  'Romanian Deadlift (DB)': 'hQgFixeXdZo',
+  'Frog Pump': 'jbJBXErKD-U',
+  '45\u00b0 Hip Extension (GHD)': 'GFqfIInCuUQ',
+  'Banded Glute Bridge': '4oRkPYWV0B8',
+  'Clamshells': '09YaaN9hG2I',
+  'Fire Hydrants': '12whZWUANRY',
+  'Glute Bridge March': 'rXAbcneAr3I',
+  'Banded Monster Walk': 'hE4UsbLMjC8',
+  'Wall Sit with Abduction': 'uscCkRUU0Bs',
+  'Pallof Press': '0WtwA3p_OmQ',
+  'Bird Dog': 'ZdAHe9_HeEw',
+  'Plank (from knees or toes)': 'A2b2EmIg0dA',
+  'Plank': 'A2b2EmIg0dA',
+  'Cable Woodchop': '90Qh5XG6mqs',
+  "Farmer's Carry": '1uOs1hP3u4A',
+  '90/90 Hip Lift': '35utF6ibBOo',
+  'Dead Bug (no weight)': 'o4GKiEoYClI',
+  'Dead Bug (weighted)': 'o4GKiEoYClI',
+  'Pelvic Tilts': '91H5HtIgilg',
+  'Half-Kneeling Cable Chop': 'fYVKVAbbFTM',
+  'Side Plank': 'NQsqPcarPXY',
+  'Cable Crunch': 'dkGwcfo9zto',
+  'Suitcase Carry': 'w76_JnzMfXM',
+  'Ab Wheel (from knees)': 'MinlHnG7j4k',
+  'Bear Crawl Hold': 'M1LgdyUDLsc',
+  'Band Pull-Apart': 'osRimvxXlKQ',
+  'Hanging Knee Raise': 'X-ACS9vpRyU',
+  'Single-Arm Overhead Carry': '1grTH_YfK_0',
+  'Pallof Hold': 'AV4vW89ok5g',
+  'DB Bench Press': 'SHsUIZiNdeY',
+  'Seated DB Shoulder Press': 'qEwKCR5JCog',
+  'Cable Chest Fly': 'ovFc-5YdcXw',
+  'Lateral Raise': 'IdNOahFD450',
+  'Tricep Pushdown': 'REWv05om0ho',
+  'Push-Up': 'Zi6c09DRGxk',
+  'Face Pull': 'eMfu-qw0IKs',
+  'Lat Pulldown': 'O94yEoGXtBY',
+  'Lat Pulldown (close grip)': 'O94yEoGXtBY',
+  'Seated Cable Row': 'sP_4vybjVJs',
+  'Single-Arm DB Row': 'qN54-QNO1eQ',
+  'Reverse Fly (cable or DB)': 'xvEkgGUrGPM',
+  'Bicep Curl (DB)': 'iui51E31sX8',
+  'Bicep Curl': 'iui51E31sX8',
+  'Straight-Arm Pulldown': 'hAMcfubonDc',
+  'Dead Hang': 'fq9gDvNZQ2c',
+  'Incline DB Press': '8fXfwG4ftaQ',
+  'Arnold Press': 'ris9tKqMwgU',
+  'Hammer Curl': 'BRVDS6HVR9Q',
+  'Overhead Tricep Extension': 'b5le--KkyH0',
+  'Leg Press': 'nDh_BlnLCGc',
+  'Leg Press (narrow stance)': 'nDh_BlnLCGc',
+  'Hack Squat': 'g9i05umL5vc',
+  'Leg Extension': 'w72YiHz15CA',
+  'Standing Calf Raise': 'baEXLy09Ncc',
+  'Wall Sit': 'mDdLC-yKudY',
+  'Romanian Deadlift (Barbell)': '_oyxCn2iSjU',
+  'Lying Leg Curl': 'uNPWyzhzbBI',
+  'Single-Leg Deadlift (DB)': 'vGuyEm2KWSI',
+  'Seated Calf Raise': 'xK6DoHBXTdw',
+  'Nordic Curl (eccentric only)': 'o40Zd3WRbxg',
+  'Front Squat': 'PPmvh7gBTi0',
+  'Leg Curl (seated or lying)': '_lgE0gPvbik',
+  'Tibialis Raise': 'pQcvW08rnAk',
+  'Diaphragmatic Breathing': '9jpchJcKivk',
+  'Good Mornings (bodyweight)': 'sAAn3y-qxP4',
+  'Cable Row': 'e9oe5qbN0jo',
+  'Cable Row (wide grip)': 'e9oe5qbN0jo',
+  'DB Shoulder Press': 'qEwKCR5JCog',
+  'Bodyweight Squat': 'q1fCgfieNEs',
+};
+
 const WORKOUTS = {
   glutes: [
     {
@@ -624,7 +730,9 @@ function renderWorkout(workout) {
       currentSuperset = null;
     }
 
-    const searchQ = encodeURIComponent(ex.name + ' exercise form');
+    const vid = VIDEOS[ex.name];
+    const videoUrl = vid ? `https://www.youtube.com/watch?v=${vid}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}`;
+    const thumbUrl = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
     html += `
       <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup'})">
         <div class="top-row">
@@ -637,7 +745,13 @@ function renderWorkout(workout) {
           ${ex.rest ? `<span>${ex.rest} rest</span>` : ''}
         </div>
         ${ex.note ? `<div class="note">${ex.note}</div>` : ''}
-        <a class="demo-btn" href="https://www.youtube.com/results?search_query=${searchQ}" target="_blank" onclick="event.stopPropagation()">&#x25B6; watch demo</a>
+        ${thumbUrl ? `<a class="demo-row" href="${videoUrl}" target="_blank" onclick="event.stopPropagation()">
+          <div class="demo-thumb">
+            <img src="${thumbUrl}" alt="${ex.name}" loading="lazy">
+            <div class="play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="8 5 19 12 8 19"/></svg></div>
+          </div>
+          <span class="demo-link">watch demo</span>
+        </a>` : ''}
       </div>
     `;
   });
