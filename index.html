@@ -43,6 +43,28 @@ body {
   color: var(--text2);
   margin-top: 4px;
 }
+.duration-picker {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.dur-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dur-btn.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 600;
+}
 
 .section-label {
   font-size: 11px;
@@ -308,7 +330,11 @@ body {
 <div class="app">
   <div class="header">
     <h1>Hema's Workout</h1>
-    <p>45 min</p>
+    <div class="duration-picker">
+      <button type="button" class="dur-btn" data-dur="30">30 min</button>
+      <button type="button" class="dur-btn active" data-dur="45">45 min</button>
+      <button type="button" class="dur-btn" data-dur="60">60 min</button>
+    </div>
   </div>
 
   <div class="section-label">Today's focus</div>
@@ -674,12 +700,20 @@ const WORKOUTS = {
 let selectedFocuses = new Set();
 let totalExercises = 0;
 let completedExercises = 0;
+let selectedDuration = 45;
 
 document.querySelector('.focus-grid').addEventListener('click', e => {
   const btn = e.target.closest('.focus-btn');
   if (btn) toggleFocus(btn);
 });
 document.getElementById('genBtn').addEventListener('click', generateWorkout);
+document.querySelector('.duration-picker').addEventListener('click', e => {
+  const btn = e.target.closest('.dur-btn');
+  if (!btn) return;
+  document.querySelectorAll('.dur-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedDuration = parseInt(btn.dataset.dur);
+});
 
 function toggleFocus(btn) {
   const focus = btn.dataset.focus;
@@ -707,10 +741,33 @@ function toggleFocus(btn) {
 
 function pickRandom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
+function getDurationConfig() {
+  if (selectedDuration === 30) return { mains: 3, comboMains: 4, warmups: 2, cooldowns: 2, supersets: 1 };
+  if (selectedDuration === 60) return { mains: 6, comboMains: 8, warmups: 3, cooldowns: 3, supersets: 3 };
+  return { mains: 4, comboMains: 6, warmups: 3, cooldowns: 3, supersets: 2 };
+}
+
+function scaleWorkout(workout) {
+  const cfg = getDurationConfig();
+  const warmups = workout.exercises.filter(e => e.type === 'warmup');
+  const mains = workout.exercises.filter(e => !e.type || e.type === 'finisher');
+  const scaled = shuffle(mains).slice(0, cfg.mains + 1);
+  for (let i = 0; i < scaled.length - 1; i += 2) {
+    if (i / 2 < cfg.supersets) {
+      const tag = String.fromCharCode(65 + i / 2);
+      scaled[i].superset = tag;
+      scaled[i].rest = '\u2014';
+      scaled[i + 1].superset = tag;
+    }
+  }
+  return { name: workout.name, exercises: [...warmups.slice(0, cfg.warmups), ...scaled] };
+}
+
 function generateWorkout() {
   const focuses = [...selectedFocuses];
   if (focuses.length === 1) {
-    renderWorkout(pickRandom(WORKOUTS[focuses[0]]));
+    const w = pickRandom(WORKOUTS[focuses[0]]);
+    renderWorkout(selectedDuration === 45 ? w : scaleWorkout(w));
     return;
   }
   const merged = buildComboWorkout(focuses);
@@ -733,8 +790,9 @@ function buildComboWorkout(focuses) {
     });
   });
 
+  const cfg = getDurationConfig();
   const pickedWarmups = shuffle(warmups).slice(0, 2);
-  const pickedMains = shuffle(mains).slice(0, 6);
+  const pickedMains = shuffle(mains).slice(0, cfg.comboMains);
   const pickedFinisher = shuffle(finishers).slice(0, 1);
 
   for (let i = 0; i < pickedMains.length - 1; i += 2) {
@@ -828,7 +886,8 @@ function getStretches(focuses, phase) {
       });
     });
   }
-  return pool.slice(0, phase === 'warmup' ? 3 : 3);
+  const cfg = getDurationConfig();
+  return pool.slice(0, phase === 'warmup' ? cfg.warmups : cfg.cooldowns);
 }
 
 function renderWorkout(workout) {
@@ -844,7 +903,7 @@ function renderWorkout(workout) {
   doneIndices = new Set();
 
   const container = document.getElementById('workout');
-  container.innerHTML = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~45 min</div></div>`;
+  container.innerHTML = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~${selectedDuration} min</div></div>`;
   container.classList.add('visible');
   document.getElementById('progressBar').classList.add('visible');
 
