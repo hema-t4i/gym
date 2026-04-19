@@ -408,6 +408,29 @@ const VIDEOS = {
   'Cable Row (wide grip)': 'e9oe5qbN0jo',
   'DB Shoulder Press': 'qEwKCR5JCog',
   'Bodyweight Squat': 'q1fCgfieNEs',
+  'Hip Circles': 'bLgFdOBkmdU',
+  'Leg Swings (front-to-back)': 'gBW_qHMD8Yg',
+  'Leg Swings (side-to-side)': 'gBW_qHMD8Yg',
+  'Dynamic Pigeon Stretch': 'dR_ynbvLD8E',
+  'Walking Knee Hugs': 'aKRWR5FXWGU',
+  'Thoracic Rotation': 'T-rGEHbv2JI',
+  'Inchworm': 'ZpYVSeMOlOc',
+  'Ankle Circles': 'V47VaJjbkQs',
+  'Walking Quad Pull': 'mCnpsXtaESE',
+  'Scapular Push-Ups': 'ALzFr2GT3Is',
+  'Band Dislocates': 'Eveq1HLBb_k',
+  'Pigeon Stretch': 'dR_ynbvLD8E',
+  'Figure-4 Stretch': 'lOCse4IFaV8',
+  'Hip Flexor Stretch (kneeling)': 'YQmpO9DYGlc',
+  'Cobra Stretch': 'JDcdhTuycOI',
+  'Supine Twist': 'jJi0RlNFYWI',
+  "Child's Pose": 'eVoiTklFR4A',
+  'Standing Quad Stretch': 'pS0SaeLQH0w',
+  'Standing Hamstring Stretch': '4T2wwDjYHGM',
+  'Calf Stretch (wall)': 'bFax6qR2VSg',
+  'Chest Doorway Stretch': 'WqWTRv8oDnk',
+  'Cross-Body Shoulder Stretch': 'lMPPdCKDaUE',
+  'Lat Stretch (doorframe)': 'IoFORixtyGM',
 };
 
 const WORKOUTS = {
@@ -707,19 +730,104 @@ function shuffle(arr) {
   return a;
 }
 
+const STRETCHES = {
+  warmup: {
+    glutes: [
+      { type: 'stretch', name: 'Hip Circles', sets: 1, reps: '10 each direction', note: 'Standing, hands on hips. Big circles to open up the hip joints.' },
+      { type: 'stretch', name: 'Leg Swings (front-to-back)', sets: 1, reps: '10 each leg', note: 'Hold onto something. Swing leg forward and back, increasing range gradually.' },
+      { type: 'stretch', name: 'Dynamic Pigeon Stretch', sets: 1, reps: '30 sec each side', note: 'On the floor, bring shin across. Rock gently in and out of the stretch.' },
+      { type: 'stretch', name: 'Walking Knee Hugs', sets: 1, reps: '10 steps', note: 'Pull knee to chest each step. Stretches glutes and hip flexors.' },
+    ],
+    core: [
+      { type: 'stretch', name: 'Cat-Cow', sets: 1, reps: '10', note: 'Slow, breathe into each position. Mobilize the entire spine.' },
+      { type: 'stretch', name: 'Thoracic Rotation', sets: 1, reps: '8 each side', note: 'On all fours, hand behind head, rotate open to ceiling. Open up the upper back.' },
+      { type: 'stretch', name: 'Hip Circles', sets: 1, reps: '10 each direction', note: 'Standing, big circles. Loosens up the hips which connect to your core.' },
+      { type: 'stretch', name: 'Inchworm', sets: 1, reps: '5', note: 'Walk hands out to plank, walk feet to hands. Warms up the whole chain.' },
+    ],
+    lower: [
+      { type: 'stretch', name: 'Leg Swings (front-to-back)', sets: 1, reps: '10 each leg', note: 'Swing leg forward and back. Warms up hamstrings and hip flexors.' },
+      { type: 'stretch', name: 'Leg Swings (side-to-side)', sets: 1, reps: '10 each leg', note: 'Swing leg across and out. Opens up inner thighs and hips.' },
+      { type: 'stretch', name: 'Ankle Circles', sets: 1, reps: '10 each direction per foot', note: 'Warm up the ankle joints before loading them. Prevents stiffness.' },
+      { type: 'stretch', name: 'Walking Quad Pull', sets: 1, reps: '10 steps', note: 'Pull heel to glute each step. Stretches quads and hip flexors.' },
+    ],
+    upper: [
+      { type: 'stretch', name: 'Arm Circles', sets: 1, reps: '10 each direction', note: 'Small to big circles. Warms up the shoulder joints.' },
+      { type: 'stretch', name: 'Thoracic Rotation', sets: 1, reps: '8 each side', note: 'On all fours, rotate open. Crucial for pressing and pulling safely.' },
+      { type: 'stretch', name: 'Band Dislocates', sets: 1, reps: '10', note: 'Light band overhead and behind. Go slow, opens up shoulders and chest.' },
+      { type: 'stretch', name: 'Scapular Push-Ups', sets: 1, reps: '10', note: 'Plank position, just protract and retract shoulder blades. Wakes up the serratus.' },
+    ],
+  },
+  cooldown: {
+    glutes: [
+      { type: 'cooldown', name: 'Pigeon Stretch', sets: 1, reps: '45 sec each side', note: 'Deep glute and hip stretch. Breathe and relax into it.' },
+      { type: 'cooldown', name: 'Figure-4 Stretch', sets: 1, reps: '30 sec each side', note: 'Lying on back, ankle on opposite knee. Pull thigh toward you.' },
+      { type: 'cooldown', name: 'Hip Flexor Stretch (kneeling)', sets: 1, reps: '30 sec each side', note: 'Back knee on pad, squeeze glute of back leg. Opens up tight hip flexors.' },
+    ],
+    core: [
+      { type: 'cooldown', name: 'Cobra Stretch', sets: 1, reps: '30 sec', note: 'Lie face down, press up gently. Opens up the abs and hip flexors.' },
+      { type: 'cooldown', name: 'Supine Twist', sets: 1, reps: '30 sec each side', note: 'Lie on back, knees to one side. Stretches obliques and lower back.' },
+      { type: 'cooldown', name: "Child's Pose", sets: 1, reps: '45 sec', note: 'Knees wide, reach forward. Breathe into your back. Let everything relax.' },
+    ],
+    lower: [
+      { type: 'cooldown', name: 'Standing Quad Stretch', sets: 1, reps: '30 sec each', note: 'Pull heel to glute, keep knees together. Hold something for balance.' },
+      { type: 'cooldown', name: 'Standing Hamstring Stretch', sets: 1, reps: '30 sec each', note: 'Foot on low bench, hinge forward with flat back. Feel the stretch behind the knee.' },
+      { type: 'cooldown', name: 'Calf Stretch (wall)', sets: 1, reps: '30 sec each', note: 'Hands on wall, one leg back, heel down. Lean in until you feel the calf stretch.' },
+      { type: 'cooldown', name: 'Pigeon Stretch', sets: 1, reps: '45 sec each side', note: 'Deep hip and glute stretch. Essential after heavy lower body work.' },
+    ],
+    upper: [
+      { type: 'cooldown', name: 'Chest Doorway Stretch', sets: 1, reps: '30 sec each side', note: 'Arm on doorframe at 90\u00b0, lean through. Opens up the chest and front delt.' },
+      { type: 'cooldown', name: 'Cross-Body Shoulder Stretch', sets: 1, reps: '30 sec each', note: 'Pull arm across body with opposite hand. Stretches rear delt and upper back.' },
+      { type: 'cooldown', name: 'Lat Stretch (doorframe)', sets: 1, reps: '30 sec each side', note: 'Grab doorframe overhead, lean away. Opens up the lats and side body.' },
+    ],
+  }
+};
+
+function getStretches(focuses, phase) {
+  const pool = [];
+  const seen = new Set();
+  focuses.forEach(f => {
+    const key = f === 'full' ? 'glutes' : f;
+    (STRETCHES[phase][key] || []).forEach(s => {
+      if (!seen.has(s.name)) { seen.add(s.name); pool.push(s); }
+    });
+  });
+  if (focuses.includes('full')) {
+    ['core', 'upper'].forEach(k => {
+      (STRETCHES[phase][k] || []).forEach(s => {
+        if (!seen.has(s.name)) { seen.add(s.name); pool.push(s); }
+      });
+    });
+  }
+  return pool.slice(0, phase === 'warmup' ? 3 : 3);
+}
+
 function renderWorkout(workout) {
+  const focuses = [...selectedFocuses];
+  const warmupStretches = getStretches(focuses, 'warmup');
+  const cooldownStretches = getStretches(focuses, 'cooldown');
+
+  const allExercises = [...warmupStretches, ...workout.exercises, ...cooldownStretches];
+
   const container = document.getElementById('workout');
   let html = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~45 min</div></div>`;
 
   let currentSuperset = null;
   completedExercises = 0;
-  totalExercises = workout.exercises.filter(e => e.type !== 'warmup').length;
+  totalExercises = allExercises.filter(e => e.type !== 'warmup' && e.type !== 'stretch' && e.type !== 'cooldown').length;
 
-  workout.exercises.forEach((ex, i) => {
-    if (ex.type === 'warmup' && (i === 0 || workout.exercises[i-1].type !== 'warmup')) {
-      html += `<div class="superset-label">Warm-Up</div>`;
+  allExercises.forEach((ex, i) => {
+    const prev = allExercises[i-1];
+    if (ex.type === 'stretch' && (!prev || prev.type !== 'stretch')) {
+      html += `<div class="superset-label">Dynamic Warm-Up</div>`;
     }
-    if (ex.type === 'finisher' && workout.exercises[i-1].type !== 'finisher') {
+    if (ex.type === 'warmup' && (!prev || prev.type !== 'warmup')) {
+      html += `<div class="superset-label">Activation</div>`;
+    }
+    if (ex.type === 'cooldown' && (!prev || prev.type !== 'cooldown')) {
+      html += `<div class="superset-label">Cool-Down Stretch</div>`;
+      currentSuperset = null;
+    }
+    if (ex.type === 'finisher' && prev && prev.type !== 'finisher') {
       html += `<div class="superset-label">Finisher</div>`;
       currentSuperset = null;
     }
@@ -734,7 +842,7 @@ function renderWorkout(workout) {
     const videoUrl = vid ? `https://www.youtube.com/watch?v=${vid}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}`;
     const thumbUrl = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
     html += `
-      <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup'})">
+      <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown'})">
         <div class="top-row">
           <div class="name">${ex.name}</div>
           <div class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
