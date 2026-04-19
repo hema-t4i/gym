@@ -8,15 +8,15 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg: #0a0a0a;
-  --surface: #161616;
-  --surface2: #1e1e1e;
-  --border: #2a2a2a;
-  --text: #e8e8e8;
-  --text2: #888;
-  --accent: #c4a0ff;
-  --accent2: #9b6fdf;
-  --glow: rgba(196, 160, 255, 0.08);
+  --bg: #111110;
+  --surface: #1a1918;
+  --surface2: #222120;
+  --border: #302e2b;
+  --text: #ece8e1;
+  --text2: #8a847a;
+  --accent: #e0926a;
+  --accent2: #c47a52;
+  --glow: rgba(224, 146, 106, 0.08);
 }
 
 body {
@@ -79,7 +79,7 @@ body {
 .focus-btn .sub { font-size: 11px; color: var(--text2); font-weight: 400; margin-top: 3px; display: block; }
 .focus-btn.active {
   border-color: var(--accent);
-  background: rgba(196, 160, 255, 0.18);
+  background: rgba(224, 146, 106, 0.12);
   box-shadow: 0 0 0 2px var(--accent);
 }
 .focus-btn .selected-dot {
@@ -104,8 +104,8 @@ body {
   padding: 16px;
   border: none;
   border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent2), var(--accent));
-  color: #0a0a0a;
+  background: var(--accent);
+  color: #111110;
   font-size: 15px;
   font-weight: 700;
   cursor: pointer;
@@ -184,10 +184,10 @@ body {
 .exercise-card .note {
   margin-top: 10px;
   font-size: 12px;
-  color: var(--accent);
+  color: #bfb5a8;
   line-height: 1.5;
   padding: 8px 10px;
-  background: var(--glow);
+  background: rgba(255,255,255,0.03);
   border-radius: 8px;
 }
 
@@ -317,31 +317,31 @@ body {
       <span class="emoji">&#x1F351;</span>
       Glutes
       <span class="sub">build &amp; activate</span>
-      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </button>
     <button type="button" class="focus-btn" data-focus="core" >
       <span class="emoji">&#x1F9B4;</span>
       Core
       <span class="sub">rebuild strength</span>
-      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </button>
     <button type="button" class="focus-btn" data-focus="lower" >
       <span class="emoji">&#x1F9B5;</span>
       Lower Body
       <span class="sub">quads, hamstrings, calves</span>
-      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </button>
     <button type="button" class="focus-btn" data-focus="upper" >
       <span class="emoji">&#x1F4AA;</span>
       Upper Body
       <span class="sub">arms, back, shoulders</span>
-      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </button>
     <button type="button" class="focus-btn" data-focus="full" >
       <span class="emoji">&#x26A1;</span>
       Full Body
       <span class="sub">glutes + core + upper</span>
-      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span class="selected-dot"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
     </button>
   </div>
 
@@ -841,80 +841,20 @@ function renderWorkout(workout) {
   currentExercises = [...allExercises];
   swapPool = buildSwapPool();
 
+  doneIndices = new Set();
+
   const container = document.getElementById('workout');
-  let html = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~45 min</div></div>`;
-
-  let currentSuperset = null;
-  completedExercises = 0;
-  totalExercises = allExercises.filter(e => e.type !== 'warmup' && e.type !== 'stretch' && e.type !== 'cooldown').length;
-
-  allExercises.forEach((ex, i) => {
-    const prev = allExercises[i-1];
-    if (ex.type === 'stretch' && (!prev || prev.type !== 'stretch')) {
-      html += `<div class="superset-label">Dynamic Warm-Up</div>`;
-    }
-    if (ex.type === 'warmup' && (!prev || prev.type !== 'warmup')) {
-      html += `<div class="superset-label">Activation</div>`;
-    }
-    if (ex.type === 'cooldown' && (!prev || prev.type !== 'cooldown')) {
-      html += `<div class="superset-label">Cool-Down Stretch</div>`;
-      currentSuperset = null;
-    }
-    if (ex.type === 'finisher' && prev && prev.type !== 'finisher') {
-      html += `<div class="superset-label">Finisher</div>`;
-      currentSuperset = null;
-    }
-    if (ex.superset && ex.superset !== currentSuperset) {
-      currentSuperset = ex.superset;
-      html += `<div class="superset-label">Superset ${ex.superset}</div>`;
-    } else if (!ex.superset && !ex.type) {
-      currentSuperset = null;
-    }
-
-    const vid = VIDEOS[ex.name];
-    const videoUrl = vid ? `https://www.youtube.com/watch?v=${vid}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}`;
-    const thumbUrl = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
-    html += `
-      <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown'})">
-        <div class="top-row">
-          <div class="name">${ex.name}</div>
-          <div class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-        </div>
-        <div class="details">
-          <span>${ex.sets} sets</span>
-          <span>${ex.reps} reps</span>
-          ${ex.rest ? `<span>${ex.rest} rest</span>` : ''}
-        </div>
-        ${ex.note ? `<div class="note">${ex.note}</div>` : ''}
-        <div class="bottom-row">
-          ${thumbUrl ? `<a class="demo-row" href="${videoUrl}" target="_blank" onclick="event.stopPropagation()" style="margin-top:0">
-            <div class="demo-thumb">
-              <img src="${thumbUrl}" alt="${ex.name}" loading="lazy">
-              <div class="play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="8 5 19 12 8 19"/></svg></div>
-            </div>
-            <span class="demo-link">watch demo</span>
-          </a>` : '<span></span>'}
-          ${ex.type !== 'stretch' && ex.type !== 'cooldown' ? `<button type="button" class="swap-btn" onclick="event.stopPropagation(); swapExercise(${i})">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            swap
-          </button>` : ''}
-        </div>
-      </div>
-    `;
-  });
-
-  container.innerHTML = html;
+  container.innerHTML = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~45 min</div></div>`;
   container.classList.add('visible');
+  document.getElementById('progressBar').classList.add('visible');
 
-  const bar = document.getElementById('progressBar');
-  bar.classList.add('visible');
-  updateProgress();
-
+  rerenderExercises();
   container.scrollIntoView({ behavior: 'smooth' });
 }
 
 let currentExercises = [];
 let swapPool = [];
+let doneIndices = new Set();
 
 function buildSwapPool() {
   const focuses = [...selectedFocuses];
@@ -939,15 +879,20 @@ function swapExercise(idx) {
   if (candidates.length === 0) return;
   const replacement = candidates[Math.floor(Math.random() * candidates.length)];
   currentExercises[idx] = { ...replacement, superset: current.superset, rest: current.rest || replacement.rest };
+  doneIndices.delete(idx);
   rerenderExercises();
+}
+
+function isNonCountable(ex) {
+  return ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown';
 }
 
 function rerenderExercises() {
   const container = document.getElementById('workout');
   const header = container.querySelector('.workout-header');
   const headerHtml = header ? header.outerHTML : '';
-  completedExercises = 0;
-  totalExercises = currentExercises.filter(e => e.type !== 'warmup' && e.type !== 'stretch' && e.type !== 'cooldown').length;
+  totalExercises = currentExercises.filter(e => !isNonCountable(e)).length;
+  completedExercises = [...doneIndices].filter(i => currentExercises[i] && !isNonCountable(currentExercises[i])).length;
   let html = headerHtml;
   let currentSuperset = null;
   currentExercises.forEach((ex, i) => {
@@ -961,11 +906,12 @@ function rerenderExercises() {
     const vid = VIDEOS[ex.name];
     const videoUrl = vid ? `https://www.youtube.com/watch?v=${vid}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}`;
     const thumbUrl = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
+    const isDone = doneIndices.has(i);
     html += `
-      <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown'})">
+      <div class="exercise-card${isDone ? ' done' : ''}" onclick="toggleDone(${i})">
         <div class="top-row">
           <div class="name">${ex.name}</div>
-          <div class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#111110" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
         </div>
         <div class="details">
           <span>${ex.sets} sets</span>
@@ -981,7 +927,7 @@ function rerenderExercises() {
             </div>
             <span class="demo-link">watch demo</span>
           </a>` : '<span></span>'}
-          ${ex.type !== 'stretch' && ex.type !== 'cooldown' ? `<button type="button" class="swap-btn" onclick="event.stopPropagation(); swapExercise(${i})">
+          ${!isNonCountable(ex) ? `<button type="button" class="swap-btn" onclick="event.stopPropagation(); swapExercise(${i})">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
             swap
           </button>` : ''}
@@ -993,13 +939,10 @@ function rerenderExercises() {
   updateProgress();
 }
 
-function toggleDone(card, isWarmup) {
-  card.classList.toggle('done');
-  if (!isWarmup) {
-    if (card.classList.contains('done')) completedExercises++;
-    else completedExercises--;
-    updateProgress();
-  }
+function toggleDone(idx) {
+  if (doneIndices.has(idx)) doneIndices.delete(idx);
+  else doneIndices.add(idx);
+  rerenderExercises();
 }
 
 function updateProgress() {
