@@ -233,6 +233,36 @@ body {
   color: var(--text);
 }
 
+.exercise-card .bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 10px;
+}
+.exercise-card .swap-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text2);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.exercise-card .swap-btn:active {
+  background: var(--border);
+  color: var(--text);
+}
+.exercise-card .swap-btn svg {
+  display: block;
+}
+
 .superset-label {
   font-size: 11px;
   text-transform: uppercase;
@@ -808,6 +838,9 @@ function renderWorkout(workout) {
 
   const allExercises = [...warmupStretches, ...workout.exercises, ...cooldownStretches];
 
+  currentExercises = [...allExercises];
+  swapPool = buildSwapPool();
+
   const container = document.getElementById('workout');
   let html = `<div class="workout-header"><h2>${workout.name}</h2><div class="duration">~45 min</div></div>`;
 
@@ -853,13 +886,19 @@ function renderWorkout(workout) {
           ${ex.rest ? `<span>${ex.rest} rest</span>` : ''}
         </div>
         ${ex.note ? `<div class="note">${ex.note}</div>` : ''}
-        ${thumbUrl ? `<a class="demo-row" href="${videoUrl}" target="_blank" onclick="event.stopPropagation()">
-          <div class="demo-thumb">
-            <img src="${thumbUrl}" alt="${ex.name}" loading="lazy">
-            <div class="play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="8 5 19 12 8 19"/></svg></div>
-          </div>
-          <span class="demo-link">watch demo</span>
-        </a>` : ''}
+        <div class="bottom-row">
+          ${thumbUrl ? `<a class="demo-row" href="${videoUrl}" target="_blank" onclick="event.stopPropagation()" style="margin-top:0">
+            <div class="demo-thumb">
+              <img src="${thumbUrl}" alt="${ex.name}" loading="lazy">
+              <div class="play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="8 5 19 12 8 19"/></svg></div>
+            </div>
+            <span class="demo-link">watch demo</span>
+          </a>` : '<span></span>'}
+          ${ex.type !== 'stretch' && ex.type !== 'cooldown' ? `<button type="button" class="swap-btn" onclick="event.stopPropagation(); swapExercise(${i})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            swap
+          </button>` : ''}
+        </div>
       </div>
     `;
   });
@@ -872,6 +911,86 @@ function renderWorkout(workout) {
   updateProgress();
 
   container.scrollIntoView({ behavior: 'smooth' });
+}
+
+let currentExercises = [];
+let swapPool = [];
+
+function buildSwapPool() {
+  const focuses = [...selectedFocuses];
+  const pool = [];
+  const expand = f => f === 'full' ? ['glutes', 'core', 'upper'] : [f];
+  const allFocuses = focuses.flatMap(expand);
+  allFocuses.forEach(f => {
+    (WORKOUTS[f] || []).forEach(w => {
+      w.exercises.forEach(ex => {
+        if (ex.type !== 'warmup' && ex.type !== 'finisher') pool.push(ex);
+      });
+    });
+  });
+  return pool;
+}
+
+function swapExercise(idx) {
+  const current = currentExercises[idx];
+  if (!current) return;
+  const currentNames = new Set(currentExercises.map(e => e.name));
+  const candidates = swapPool.filter(e => !currentNames.has(e.name) && e.type !== 'warmup' && e.type !== 'finisher');
+  if (candidates.length === 0) return;
+  const replacement = candidates[Math.floor(Math.random() * candidates.length)];
+  currentExercises[idx] = { ...replacement, superset: current.superset, rest: current.rest || replacement.rest };
+  rerenderExercises();
+}
+
+function rerenderExercises() {
+  const container = document.getElementById('workout');
+  const header = container.querySelector('.workout-header');
+  const headerHtml = header ? header.outerHTML : '';
+  completedExercises = 0;
+  totalExercises = currentExercises.filter(e => e.type !== 'warmup' && e.type !== 'stretch' && e.type !== 'cooldown').length;
+  let html = headerHtml;
+  let currentSuperset = null;
+  currentExercises.forEach((ex, i) => {
+    const prev = currentExercises[i-1];
+    if (ex.type === 'stretch' && (!prev || prev.type !== 'stretch')) html += '<div class="superset-label">Dynamic Warm-Up</div>';
+    if (ex.type === 'warmup' && (!prev || prev.type !== 'warmup')) html += '<div class="superset-label">Activation</div>';
+    if (ex.type === 'cooldown' && (!prev || prev.type !== 'cooldown')) { html += '<div class="superset-label">Cool-Down Stretch</div>'; currentSuperset = null; }
+    if (ex.type === 'finisher' && prev && prev.type !== 'finisher') { html += '<div class="superset-label">Finisher</div>'; currentSuperset = null; }
+    if (ex.superset && ex.superset !== currentSuperset) { currentSuperset = ex.superset; html += `<div class="superset-label">Superset ${ex.superset}</div>`; }
+    else if (!ex.superset && !ex.type) currentSuperset = null;
+    const vid = VIDEOS[ex.name];
+    const videoUrl = vid ? `https://www.youtube.com/watch?v=${vid}` : `https://www.youtube.com/results?search_query=${encodeURIComponent(ex.name + ' exercise form')}`;
+    const thumbUrl = vid ? `https://img.youtube.com/vi/${vid}/mqdefault.jpg` : '';
+    html += `
+      <div class="exercise-card" onclick="toggleDone(this, ${ex.type === 'warmup' || ex.type === 'stretch' || ex.type === 'cooldown'})">
+        <div class="top-row">
+          <div class="name">${ex.name}</div>
+          <div class="check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
+        <div class="details">
+          <span>${ex.sets} sets</span>
+          <span>${ex.reps} reps</span>
+          ${ex.rest ? `<span>${ex.rest} rest</span>` : ''}
+        </div>
+        ${ex.note ? `<div class="note">${ex.note}</div>` : ''}
+        <div class="bottom-row">
+          ${thumbUrl ? `<a class="demo-row" href="${videoUrl}" target="_blank" onclick="event.stopPropagation()" style="margin-top:0">
+            <div class="demo-thumb">
+              <img src="${thumbUrl}" alt="${ex.name}" loading="lazy">
+              <div class="play-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="white"><polygon points="8 5 19 12 8 19"/></svg></div>
+            </div>
+            <span class="demo-link">watch demo</span>
+          </a>` : '<span></span>'}
+          ${ex.type !== 'stretch' && ex.type !== 'cooldown' ? `<button type="button" class="swap-btn" onclick="event.stopPropagation(); swapExercise(${i})">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+            swap
+          </button>` : ''}
+        </div>
+      </div>
+    `;
+  });
+  container.innerHTML = html;
+  updateProgress();
 }
 
 function toggleDone(card, isWarmup) {
